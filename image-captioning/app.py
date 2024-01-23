@@ -4,8 +4,14 @@ from PIL import Image
 import torch
 import requests
 import warnings
+from dotenv import load_dotenv
+import os
 
-def get_model(model_path):
+app = Flask(__name__)
+load_dotenv()
+model_path = os.getenv('CACHED_MODEL_PATH', 'Salesforce/blip-image-captioning-large')
+
+def get_model():
     model = BlipForConditionalGeneration.from_pretrained(model_path)
     processor = BlipProcessor.from_pretrained(model_path)
 
@@ -14,9 +20,10 @@ def get_model(model_path):
 
     return model, processor, device
 
-model, processor, device = get_model('models/Salesforce/blip-image-captioning-large')
+model, processor, device = get_model()
 
-app = Flask(__name__)
+
+app.logger.info(f"Model loaded from {model_path}")
 
 
 allowed_generate_options = {
@@ -123,3 +130,5 @@ def image_captioning_endpoint():
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=6000, debug=True)
+
+    app.logger.debug(f"Model loaded from {model_path}")
