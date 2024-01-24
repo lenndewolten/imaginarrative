@@ -1,0 +1,26 @@
+POST http://127.0.0.1:6000/image-captioning HTTP/1.1
+content-type: application/json
+
+{
+    "image_url": "https://images.pexels.com/photos/19599971/pexels-photo-19599971/free-photo-of-an-old-man-standing-on-the-shore-near-a-pier.jpeg",
+    "image_text_input": "a photograph of",
+    "generate_options": {
+        "max_new_tokens": 300,
+        "temperature": 0.7,
+        "do_sample": true
+    }
+}
+
+###
+
+POST http://127.0.0.1:6000/image-captioning HTTP/1.1
+content-type: application/json
+
+{
+    "image_url": "https://images.pexels.com/photos/19599971/pexels-photo-19599971/free-photo-of-an-old-man-standing-on-the-shore-near-a-pier.jpeg",
+    "generate_options": {
+        "max_new_tokens": 300,
+        "num_beams": 5,
+        "num_return_sequences": 5
+    }
+}

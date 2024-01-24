@@ -7,7 +7,6 @@ import warnings
 from dotenv import load_dotenv
 import os
 
-app = Flask(__name__)
 load_dotenv()
 model_path = os.getenv('CACHED_MODEL_PATH', 'Salesforce/blip-image-captioning-large')
 
@@ -22,9 +21,7 @@ def get_model():
 
 model, processor, device = get_model()
 
-
-app.logger.info(f"Model loaded from {model_path}")
-
+app = Flask(__name__)
 
 allowed_generate_options = {
     "max_new_tokens": {"type": int, "min": 50, "max": 300},
@@ -130,5 +127,3 @@ def image_captioning_endpoint():
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=6000, debug=True)
-
-    app.logger.debug(f"Model loaded from {model_path}")
