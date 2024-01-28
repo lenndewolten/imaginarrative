@@ -106,7 +106,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
     template: {
       containers: [
         {
-          image: '${acr.properties.loginServer}/image-captioning:5'
+          image: '${acr.properties.loginServer}/image-captioning:6'
           name: containerAppName
           resources: {
             cpu: json('2')

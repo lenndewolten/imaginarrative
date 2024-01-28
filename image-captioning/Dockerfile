@@ -14,8 +14,8 @@ RUN pip install gunicorn
 ARG ENTRY_DIR="/app"
 WORKDIR ${ENTRY_DIR}
 
-COPY download_models.py .
-RUN python3 download_models.py
+# COPY download_models.py .
+# RUN python3 download_models.py
 
 COPY app.py .
 
