@@ -8,11 +8,33 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-model_path = os.getenv('CACHED_MODEL_PATH', 'Salesforce/blip-image-captioning-large')
+model_path = os.getenv('CACHED_MODEL_PATH', 'models/Salesforce/blip-image-captioning-large')
+
+# def download_model():
+#     """Download a Hugging Face model and processor to the specified directory"""
+#     try:
+#         if not os.path.exists(model_path):
+#             os.makedirs(model_path)
+#     except FileExistsError:
+#         pass
+
+#     processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
+#     model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
+#     model.save_pretrained(model_path)
+#     processor.save_pretrained(model_path)
+#     return model, processor
 
 def get_model():
+    model = None
+    processor = None
+    
     model = BlipForConditionalGeneration.from_pretrained(model_path)
     processor = BlipProcessor.from_pretrained(model_path)
+    # try:
+    #     model = BlipForConditionalGeneration.from_pretrained(model_path)
+    #     processor = BlipProcessor.from_pretrained(model_path)
+    # except OSError as e:
+    #     model, processor = download_model()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -49,7 +71,6 @@ def validate_generate_options(key, value):
         return f"{key} must be less than or equal to {option_info['max']}"
 
     return None
-
 
 def get_options(json):
     image_url = json.get('image_url')
@@ -101,7 +122,6 @@ def generate_captions(image_url, image_text_input, **kwargs):
 
 @app.route('/image-captioning', methods=['POST'])
 def image_captioning_endpoint():
-
     captured_warnings = []
     try:
         options, error = get_options(request.json)
@@ -124,6 +144,11 @@ def image_captioning_endpoint():
     finally:
         captured_warnings.clear()
         warnings.resetwarnings()
+
+@app.route('/live', methods=['GET'])
+def health_endpoint():
+    return jsonify({'status': 'Healthy'}), 200
     
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=6000, debug=True)

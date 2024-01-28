@@ -14,6 +14,10 @@ RUN pip install gunicorn
 ARG ENTRY_DIR="/app"
 WORKDIR ${ENTRY_DIR}
 
+COPY download_models.py .
+RUN python3 download_models.py
+
 COPY app.py .
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:6000", "--log-level", "debug", "app:app"]
+
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:6000", "--log-level", "debug", "--timeout", "500", "app:app"]

@@ -44,19 +44,13 @@ pip install -r requirements.txt
 CACHED_MODEL_PATH=models/Salesforce/blip-image-captioning-large
 ```
 
-5. Download the Hugging face model. The models will be downloaden in the `CACHED_MODEL_PATH`
-
-```pwsh
-   python3 download_models.py
-```
-
-6. Optional: Build the app for docker
+5. Optional: Build the app for docker
 
 ```pwsh
     docker build -t <your-docker-image-name> .
 ```
 
-7. Run the app:
+6. Run the app:
 
 Run the app for development:
 

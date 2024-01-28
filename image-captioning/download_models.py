@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-model_path = os.getenv('CACHED_MODEL_PATH', 'Salesforce/blip-image-captioning-large')
+model_path = os.getenv('CACHED_MODEL_PATH', 'models/Salesforce/blip-image-captioning-large')
 
 def download_model():
     """Download a Hugging Face model and processor to the specified directory"""
