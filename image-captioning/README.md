@@ -55,13 +55,19 @@ CACHED_MODEL_PATH=models/Salesforce/blip-image-captioning-large
 Run the app for development:
 
 ```pwsh
-   python3 app.py
+   python -m uvicorn app:app --reload
 ```
 
 Run the app in docker.
 
 ```pwsh
-docker run -it --rm -p 6000:6000 -e CACHED_MODEL_PATH=<path_to_your_local_models> -v <path_to_your_local_models>:/app/models <your-docker-image-name>
+docker run -it --rm -p 8000:8000 -e CACHED_MODEL_PATH=<path_to_your_local_models> -v <path_to_your_local_models>:/app/models <your-docker-image-name>
+```
+
+example:
+
+```bash
+docker run -it --rm -p 8000:8000 --env-file .\.env -v .\models:/app/models  uvicorn-app
 ```
 
 ## Examples

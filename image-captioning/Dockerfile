@@ -9,15 +9,10 @@ RUN apt-get update && \
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install gunicorn
 
 ARG ENTRY_DIR="/app"
 WORKDIR ${ENTRY_DIR}
 
-# COPY download_models.py .
-# RUN python3 download_models.py
-
 COPY app.py .
 
-
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:6000", "--log-level", "debug", "--timeout", "500", "app:app"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

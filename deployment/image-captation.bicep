@@ -93,7 +93,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
     configuration: {
       ingress: {
         external: true
-        targetPort: 6000
+        targetPort: 8000
       }
       registries: [
         {
@@ -106,7 +106,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
     template: {
       containers: [
         {
-          image: '${acr.properties.loginServer}/image-captioning:6'
+          image: '${acr.properties.loginServer}/image-captioning:7'
           name: containerAppName
           resources: {
             cpu: json('2')
@@ -125,18 +125,28 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
             }
           ]
           probes: [
-            // {
-            //   failureThreshold: 10
-            //   httpGet: {
-            //     path: 'live'
-            //     port: 6000
-            //     scheme: 'HTTP'
-            //   }
-            //   initialDelaySeconds: 30
-            //   periodSeconds: 20
-            //   timeoutSeconds: 10
-            //   type: 'Startup'
-            // }
+            {
+              failureThreshold: 10
+              httpGet: {
+                path: 'ready'
+                port: 8000
+                scheme: 'HTTP'
+              }
+              initialDelaySeconds: 30
+              periodSeconds: 20
+              timeoutSeconds: 10
+              type: 'Readiness'
+            }
+            {
+              httpGet: {
+                path: 'live'
+                port: 8000
+                scheme: 'HTTP'
+              }
+              periodSeconds: 60
+              timeoutSeconds: 10
+              type: 'Liveness'
+            }
           ]
         }
 
