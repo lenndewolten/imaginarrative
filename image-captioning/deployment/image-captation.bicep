@@ -20,6 +20,12 @@ param identityName string = '${containerAppName}-identity'
 @description('Provide a name for the storage account if applicable.')
 param storageAccountName string = '${containerAppName}-storage'
 
+@description('Provide the tag of the image used by the app.')
+param image Image = {
+  repository: 'image-captioning'
+  tag: 'latest'
+}
+
 var acrPullRole = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
@@ -27,7 +33,7 @@ resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' 
   location: location
 }
 
-module containerApp_identity_acrPullRole 'modules/role-assignments.bicep' = {
+module containerApp_identity_acrPullRole '../../deployment/modules/role-assignments.bicep' = {
   name: 'container-app-acr-access-${containerAppName}'
   scope: resourceGroup(acrRG)
   params: {
@@ -58,7 +64,7 @@ resource fileShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2022-0
   properties: {}
 }
 
-module fileShareLink 'modules/fileshare.bicep' = {
+module fileShareLink '../../deployment/modules/fileshare.bicep' = {
   name: 'fileshare-link'
   scope: resourceGroup(containerAppEnvRG)
   params: {
@@ -80,6 +86,7 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing
   scope: resourceGroup(containerAppEnvRG)
 }
 
+var targetPort = 8000
 resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerAppName
   location: location
@@ -93,7 +100,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
     configuration: {
       ingress: {
         external: true
-        targetPort: 8000
+        targetPort: targetPort
       }
       registries: [
         {
@@ -106,7 +113,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
     template: {
       containers: [
         {
-          image: '${acr.properties.loginServer}/image-captioning:7'
+          image: '${acr.properties.loginServer}/${image.repository}:${image.tag}'
           name: containerAppName
           resources: {
             cpu: json('2')
@@ -129,18 +136,18 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
               failureThreshold: 10
               httpGet: {
                 path: 'ready'
-                port: 8000
+                port: targetPort
                 scheme: 'HTTP'
               }
               initialDelaySeconds: 30
-              periodSeconds: 20
+              periodSeconds: 30
               timeoutSeconds: 10
               type: 'Readiness'
             }
             {
               httpGet: {
                 path: 'live'
-                port: 8000
+                port: targetPort
                 scheme: 'HTTP'
               }
               periodSeconds: 60
@@ -174,4 +181,9 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
       ]
     }
   }
+}
+
+type Image = {
+  repository: string
+  tag: string
 }

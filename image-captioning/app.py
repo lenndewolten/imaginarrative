@@ -43,7 +43,7 @@ def get_model():
     try:
         model = BlipForConditionalGeneration.from_pretrained(model_path)
         processor = BlipProcessor.from_pretrained(model_path)
-    except OSError as e:
+    except Exception:
         model, processor = download_model()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
