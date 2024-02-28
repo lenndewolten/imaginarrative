@@ -90,6 +90,9 @@ var targetPort = 8000
 resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerAppName
   location: location
+  dependsOn: [
+    containerApp_identity_acrPullRole
+  ]
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {

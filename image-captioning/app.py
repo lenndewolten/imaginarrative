@@ -17,7 +17,7 @@ class Options(BaseModel):
 class Request(BaseModel):
     image_url: str 
     image_text_input: str = Field(None)
-    generate_options: Options = Field({})
+    generate_options: Options = Field(Options())
 
 load_dotenv()
 model_path = os.getenv('CACHED_MODEL_PATH', 'models/Salesforce/blip-image-captioning-large')

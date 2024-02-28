@@ -23,7 +23,8 @@ param image Image = {
   tag: 'latest'
 }
 
-param secrets Secret[] = []
+@secure()
+param secrets object = {}
 
 var acrPullRole = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 
@@ -52,14 +53,12 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' existing
 }
 
 var targetPort = 8000
-var env = [for secret in secrets: {
-  name: secret.name
-  value: secret.value
-}]
-
 resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerAppName
   location: location
+  dependsOn: [
+    containerApp_identity_acrPullRole
+  ]
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
@@ -78,7 +77,10 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           server: acr.properties.loginServer
         }
       ]
-      secrets: secrets
+      secrets: [for secret in items(secrets): {
+        name: replace(toLower(secret.key), '_', '-')
+        value: secret.value
+      }]
     }
     environmentId: containerAppEnv.id
 
@@ -91,7 +93,10 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
             cpu: json('0.25')
             memory: '0.5Gi'
           }
-          env: env
+          env: [for secret in items(secrets): {
+            name: secret.key
+            secretRef: replace(toLower(secret.key), '_', '-')
+          }]
           probes: [
             {
               failureThreshold: 10

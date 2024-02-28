@@ -4,16 +4,20 @@ from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv, find_dotenv
 from openai import PermissionDeniedError, RateLimitError
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi.responses import RedirectResponse
-import json
 
 load_dotenv(find_dotenv())
 
-class Request(BaseModel):
-    prompt: str 
+class Options(BaseModel): 
+    ammount_words: int = Field(150, ge=50, le=250)
+    max_tokens: int = Field(258, ge=100, le=300)
 
-def generate_story(scenario):
+class Request(BaseModel):
+    prompt: str
+    options: Options = Field(Options())
+
+def generate_story(scenario: str, options: Options):
     template = """
     You are a story teller:
     You can generate a short story based on a simple narrative. The story should not be more than {ammount_words} words;
@@ -25,17 +29,12 @@ def generate_story(scenario):
     ("human", human_template),
 ])
 
-    messages = chat_prompt.format_messages(ammount_words=200, scenario=scenario)
+    messages = chat_prompt.format_messages(ammount_words=options.ammount_words, scenario=scenario)
     chat = ChatOpenAI(model='gpt-3.5-turbo')
 
     try:
-        # story = chat.invoke(messages, max_tokens=200, temperature=0.7, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0)
-        story = None
-        with open("./example.json", 'r') as file:
-            story = json.load(file)
-        print(story)
-        # return story.content
-        return story['content']
+        story = chat.invoke(messages, max_tokens=options.max_tokens, temperature=0.7, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0)
+        return story.content
     except RateLimitError or AuthenticationError or PermissionDeniedError as e:
         error_message = e.body['message']
 
@@ -61,7 +60,7 @@ async def redirect_to_docs():
 @app.post("/generate")
 async def generate(request: Request):
         try:
-            story = generate_story(request.prompt)
+            story = generate_story(request.prompt, request.options)
             return {'result': 'success', 'story': story}
         except HTTPException as e:
             raise e
