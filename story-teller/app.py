@@ -6,7 +6,7 @@ from scipy.io.wavfile import write as write_wav
 from dotenv import load_dotenv
 import torch, os, uuid, logging
 from logging.config import dictConfig
-from models.log_config import LogConfig
+from config.log_config import LogConfig
 from ai.load_model import get_model
 
 class RequestBody(BaseModel):

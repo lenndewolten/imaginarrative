@@ -125,7 +125,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
               name: 'CACHED_MODEL_PATH'
-              value: 'ai/models/Salesforce/blip-image-captioning-large'
+              value: 'ai/models/facebook/mms-tts-eng'
             }
           ]
           volumeMounts: [

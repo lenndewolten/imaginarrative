@@ -26,6 +26,7 @@ def get_model(model_path: str):
         logger.debug("Loading the model")
         model = VitsModel.from_pretrained(model_path)
         tokenizer = AutoTokenizer.from_pretrained(model_path)
+        logger.debug("Model loaded from cache")
     except Exception:
         logger.debug("Model not found, downloading model")
         model, tokenizer = download_model(model_path)
