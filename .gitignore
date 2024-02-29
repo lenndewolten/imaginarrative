@@ -163,5 +163,6 @@ cython_debug/
 
 # Models
 **/ai/models/**
+**/ai/embeddings/**
 
 .localdeploy.ps1

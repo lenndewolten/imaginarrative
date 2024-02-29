@@ -5,4 +5,6 @@ torch==2.2.1+cpu
 fastapi 
 uvicorn
 python-dotenv
-scipy
+soundfile
+datasets
+sentencepiece

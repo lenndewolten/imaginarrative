@@ -68,7 +68,7 @@ module fileShareLink '../../deployment/modules/fileshare.bicep' = {
   name: 'fileshare-link'
   scope: resourceGroup(containerAppEnvRG)
   params: {
-    name: 'image-captioning'
+    name: 'story-teller'
     containerAppEnvName: containerAppEnvName
     shareName: fileShare.name
     accountName: storageAccount.name
@@ -125,12 +125,20 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
               name: 'CACHED_MODEL_PATH'
-              value: 'ai/models/facebook/mms-tts-eng'
+              value: 'ai/cache/models/microsoft/speecht5_tts'
+            }
+            {
+              name: 'CACHED_EMBEDDINGS_PATH'
+              value: 'ai/cache/embeddings'
+            }
+            {
+              name: 'LOG_LEVEL'
+              value: 'DEBUG'
             }
           ]
           volumeMounts: [
             {
-              mountPath: '/app/ai/models'
+              mountPath: '/app/ai/cache'
               volumeName: 'models'
             }
           ]

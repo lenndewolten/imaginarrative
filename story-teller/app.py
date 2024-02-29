@@ -2,12 +2,13 @@ from transformers import VitsModel, AutoTokenizer
 from fastapi.responses import RedirectResponse, FileResponse
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, BackgroundTasks
-from scipy.io.wavfile import write as write_wav
 from dotenv import load_dotenv
-import torch, os, uuid, logging
+import os, uuid, logging
 from logging.config import dictConfig
 from config.log_config import LogConfig
 from ai.load_model import get_model
+from ai.load_embeddings import get_embeddings
+import soundfile as sf
 
 class RequestBody(BaseModel):
     text: str 
@@ -16,9 +17,12 @@ dictConfig(LogConfig().model_dump())
 logger = logging.getLogger("story-teller")
 
 load_dotenv()
-model_path = os.getenv('CACHED_MODEL_PATH', 'ai/models/facebook/mms-tts-eng')
+model_path = os.getenv('CACHED_MODEL_PATH', 'ai/models/microsoft/speecht5_tts')
+embeddings_path = os.getenv('CACHED_EMBEDDINGS_PATH', 'ai/embeddings')
 
-model, tokenizer = get_model(model_path)
+
+model, processor, vocoder = get_model(model_path)
+speaker_embeddings = get_embeddings(embeddings_path)
 
 app = FastAPI()
 
@@ -32,16 +36,17 @@ def clean_temp_audio_file(temp_audio_file):
 def generated_audio(body: RequestBody, background_tasks: BackgroundTasks):
     try:
         text = body.text
-        inputs = tokenizer(text, return_tensors="pt")
+        ## check if max 600
+        inputs = processor(text=text, return_tensors="pt")
 
         temp_audio_file = f'{str(uuid.uuid4())}.wav'
         
         background_tasks.add_task(clean_temp_audio_file, temp_audio_file)
-        with torch.no_grad():
-            logger.debug("Generating audio")
-            output = model(**inputs).waveform
-            write_wav(temp_audio_file, rate=model.config.sampling_rate, data=output.float().numpy().squeeze())
-            logger.debug("Audio generated")
+
+        logger.debug("Generating audio")
+        speech = model.generate_speech(inputs["input_ids"], speaker_embeddings, vocoder=vocoder)
+        sf.write(temp_audio_file, speech.numpy(), samplerate=16000)
+        logger.debug("Audio generated")
 
         return FileResponse(temp_audio_file, media_type='audio/wav')
     except Exception as e:
