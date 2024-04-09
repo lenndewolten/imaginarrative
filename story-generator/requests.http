@@ -1,0 +1,16 @@
+POST http://127.0.0.1:8000/generate HTTP/1.1
+content-type: application/json
+{
+    "prompt": "a photograph of a woman with a flower in her hair holding a green fruit"
+}
+
+###
+POST http://127.0.0.1:8000/generate HTTP/1.1
+content-type: application/json
+{
+    "prompt": "a photograph of a woman with a flower in her hair holding a green fruit",
+    "options": {
+        "max_characters": 100,
+        "max_tokens": 150
+    }
+}
