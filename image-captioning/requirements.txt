@@ -1,0 +1,9 @@
+requests
+transformers
+pillow
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==2.2.1+cpu
+fastapi 
+uvicorn
+python-dotenv
+python-multipart
