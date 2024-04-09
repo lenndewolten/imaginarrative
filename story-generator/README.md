@@ -14,6 +14,7 @@ Create a file containing the following environment variables
 
 ```
 OPENAI_API_KEY=<open_api_key>
+ALLOWED_ORIGINS=http://localhost:8080,http://localhost:3000 (optional)
 ```
 
 ### Running the app
@@ -21,7 +22,7 @@ OPENAI_API_KEY=<open_api_key>
 #### Using Docker
 
 ```bash
-docker run -it --rm -p 8000:8000 --env-file .env lenndewolten/imaginarrative_story_generating:chat3.5-turbo-v1
+docker run -it --rm -p 8000:8000 --env-file .env lenndewolten/imaginarrative_story_generating:chat3.5-turbo-v2
 ```
 
 #### Using uvicorn
