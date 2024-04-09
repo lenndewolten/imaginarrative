@@ -1,0 +1,9 @@
+*
+!config/
+!app.py
+!ai/
+!requirements.txt
+
+**/__pycache__/
+ai/models/
+ai/embeddings/
