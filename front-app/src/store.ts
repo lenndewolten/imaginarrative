@@ -28,32 +28,22 @@ export const getCaptioning = async (file: File) => {
     formData.append("image_text_input", "A photograph of");
     formData.append("num_return_sequences", "1");
 
-    // const res = await fetch(
-    //   `${import.meta.env.VITE_IMAGE_CAPTIONING_BASE_URL}/generate-by-file`,
-    //   {
-    //     method: "POST",
-    //     body: formData,
-    //   }
-    // );
+    const res = await fetch(
+      `${import.meta.env.VITE_IMAGE_CAPTIONING_BASE_URL}/generate-by-file`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
-    // if (!res.ok) {
-    //   if (res.status === 400) {
-    //     console.error(res.json());
-    //   } else {
-    //     throw new Error(res.statusText);
-    //   }
-    // }
-    // state.image_captations.value = (await res.json()) as ImageCaptions;
-
-    state.image_captations.value = {
-      result: "success",
-      warnings: [],
-      captions: [
-        {
-          generated_text: "test",
-        },
-      ],
-    };
+    if (!res.ok) {
+      if (res.status === 400) {
+        console.error(res.json());
+      } else {
+        throw new Error(res.statusText);
+      }
+    }
+    state.image_captations.value = (await res.json()) as ImageCaptions;
   } catch (error) {
     console.error(error);
     state.image_captations.value = null;

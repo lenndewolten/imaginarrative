@@ -7,9 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    copy: typeof import('./src/components/GeneratedStory copy.vue')['default']
     GeneratedStory: typeof import('./src/components/GeneratedStory.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     ImageCaptation: typeof import('./src/components/ImageCaptation.vue')['default']
     ImageDisplay: typeof import('./src/components/ImageDisplay.vue')['default']
     ImageSelect: typeof import('./src/components/ImageSelect.vue')['default']
