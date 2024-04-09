@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  image_captioning:
+    image: lenndewolten/imaginarrative_image_captioning:salesforce-blip-image-captioning-large-v3
+    environment:
+      - CACHED_MODEL_PATH=ai/models/Salesforce/blip-image-captioning-large
+      - LOG_LEVEL=DEBUG
+      - ALLOWED_ORIGINS=http://localhost:8080
+    ports:
+      - 7000:8000
+    volumes:
+      - .\image-captioning\ai\models:/app/ai/models
+  story_generating:
+    image: lenndewolten/imaginarrative_story_generating:chat3.5-turbo-v2
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ALLOWED_ORIGINS=http://localhost:8080
+    ports:
+      - 8000:8000
+  story_teller:
+    image: lenndewolten/imaginarrative_story_teller:microsoft-speecht5_tts-v3
+    environment:
+      - CACHED_MODEL_PATH=ai/models/microsoft/speecht5_tts
+      - CACHED_EMBEDDINGS_PATH=ai/embeddings
+      - LOG_LEVEL=DEBUG
+      - ALLOWED_ORIGINS=http://localhost:8080
+    ports:
+      - 9000:8000
+    volumes:
+      - .\story-teller\ai:/app/ai
+  frontend:
+    build:
+      context: front-app
+      dockerfile: Dockerfile
+      args:
+        ENV_FILE: .env
+    ports:
+      - "8080:80"
+    depends_on:
+      - image_captioning
+      - story_generating
+      - story_teller
