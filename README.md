@@ -2,6 +2,10 @@
 
 Turn an image into a story! Imaginarrative is an innovative application that transforms ordinary images into captivating stories. Using the power of AI, it employs three distinct AI models to craft narratives that bring your images to life.
 
+https://github.com/lenndewolten/imaginarrative/assets/48725857/c80485f5-709b-4163-96ec-a7e0752b8468
+
+
+
 ## Key features
 
 - Image Captioning: A FastAPI application that generates captions from input images using the pre-trained model 'Salesforce/blip-image-captioning-large' hosted on _HuggingFace_.
